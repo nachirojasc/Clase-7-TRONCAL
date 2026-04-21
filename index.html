@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>ELECTIVOS DE DISEÑO</title>
+        <style>
+            *, *::before, *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --color-oscurisimo: green;
+                --color-oscuro: #a33e79;
+                --color-normal: #a33e79;
+                --color-iluminado: #b9d175;
+                --color-iluminadisimo: #d9efbd;
+            }
+
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+                color: var(--color-normal);
+                text-align: center;
+                font-size: 100%;
+            }
+            div#contenedor {
+                margin: 1rem auto;
+                width: 90%;
+                max-width: 780px;
+            }
+
+            h1 {
+                margin: 1rem 0;
+                font-weight: 400;
+                font-size: calc(100% + 3vw + 3vh);
+            }
+
+            h2 {
+                margin: 3rem 0;
+                font-weight: 400;
+                letter-spacing: 0.25rem;
+                font-size: calc(100% + 1vw + 1vh);
+                color: var(--color-oscuro);
+            }
+
+            input {
+                border: 0.1rem solid var(--color-iluminado);
+                padding: 0.5rem 1rem;
+                font-family: inherit;
+                font-size: 15px;
+                color: var(--color-oscuro);
+                outline: none;
+                margin-bottom: 1.5rem;
+                width: 100%;
+                display: block;
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-bluesky" viewBox="0 0 16 16"><path d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"/></svg>');
+                background-repeat: no-repeat;
+                background-size: 1rem;
+                background-position: 99% center;
+            }
+
+            input::placeholder {
+                color: var(--color-iluminado);
+            }
+
+            input:focus {
+                border-color: var(--color-normal);
+            }
+
+            div#contenedordetabla {
+                overflow-x: auto;
+                font-size: 90%;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+                margin-bottom: 3rem;
+            }
+
+            thead {
+                background: var(--color-iluminado);
+            }
+
+            td,
+            th {
+                border: 1px solid var(--color-normal);
+                padding: 0.75rem;
+            }
+
+            td:nth-child(1),
+            th:nth-child(1),
+            td:nth-child(3),
+            th:nth-child(3) {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="contenedor">
+            <h1>ᕙ( •̀ ᗜ •́ )ᕗ</h1>
+            <h2>ELECTIVOS DE DISEÑO</h2>
+
+            <input type="text" id="elInput" placeholder="Filtrar electivos…" />
+            <div id="contenedordetabla">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Asignatura electiva</th>
+                            <th>Mención</th>
+                            <th>Grupo</th>
+                            <th>Enfoque</th>
+                        </tr>
+                    </thead>
+                    <tbody id="este"></tbody>
+                </table>
+            </div>
+            <small>Diseño y visualización de información</small>
+        </div>
+
+        <script>
+            const t = document.querySelector("#este");
+            const URL = "https://api.myjson.online/v1/records/15a7e2d8-428e-4626-a89e-c1e29a72f940";
+
+            fetch(URL)
+                .then((respuesta) => {
+                    if (!respuesta.ok) {
+                        throw new Error("Error HTTP: " + respuesta.status);
+                    }
+                    return respuesta.json();
+                })
+                .then((datos) => {
+                    var trabajo = datos.data;
+                    console.log(trabajo);
+                    trabajo.forEach((x) => {
+                        t.innerHTML += `<tr style="${x.ok == 1 ? "background-color: var(--color-iluminadisimo); color: var(--color-oscurisimo)" : ""}"><td>${x.id}</td><td>${x.name}</td><td>${x.track}</td><td>${x.group}</td><td>${x.focus}</td></tr>`;
+                    });
+                })
+                .catch((error) => {
+                    console.error("Algo salió mal:", error);
+                });
+
+            function sinAcentos(str) {
+                return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            }
+
+            document.getElementById("elInput").addEventListener("keyup", function () {
+                const valor = sinAcentos(this.value.toLowerCase());
+                document.querySelectorAll("#este tr").forEach(function (fila) {
+                    fila.style.display = sinAcentos(fila.textContent.toLowerCase()).includes(valor) ? "" : "none";
+                });
+            });
+        </script>
+    </body>
+</html>
